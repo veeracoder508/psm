@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python Server Manager Dashboard</title>
+</head>
+<style>
+    /* Reset and base styles */
+    * {
+        padding: 0;
+        margin: 0;
+        box-sizing: border-box;
+    }
+    body {
+        background-color: #3f6060; /* Darker cadetblue for contrast */
+        color: white;
+        font-family: monospace, sans-serif;
+        padding: 20px;
+    }
+    h1 {
+        color: #ffcc00; /* Highlight color */
+        margin-bottom: 20px;
+    }
+    .main {
+        max-width: 800px;
+        background-color: #2e4747; /* Background for main content */
+        padding: 20px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+    }
+    .secondary-section {
+        max-width: 800px;
+        background-color: #3a5353; /* A slightly different background */
+        padding: 20px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+    }
+    .secondary-section h2 {
+        color: #ffcc00;
+        margin-bottom: 15px;
+        border-bottom: 1px solid #ffcc00;
+        padding-bottom: 5px;
+    }
+    label {
+        display: block;
+        margin-top: 10px;
+        font-weight: bold;
+    }
+    textarea, input[type="text"], input[type="submit"], button {
+        font-family: monospace;
+        padding: 8px;
+        border: none;
+        border-radius: 4px;
+        margin-top: 5px;
+    }
+    textarea {
+        background: #525252;
+        color: #fff;
+        width: 100%;
+        min-height: 40px;
+        resize: vertical;
+    }
+    /* Style for buttons in general */
+    input[type="submit"], button {
+        background-color: #ff6363; /* Default Kill/Submit color */
+        height: 40px;
+        width: 150px;
+        cursor: pointer;
+        font-weight: bold;
+        transition: background-color 0.2s;
+        margin-right: 10px;
+    }
+    input[type="submit"]:hover, button:hover {
+        background-color: #ff4747;
+    }
+    /* Specific styles for list and start buttons */
+    #listServersButton {
+        background-color: #63baff; /* Blue color for listing */
+        width: 180px;
+    }
+    #listServersButton:hover {
+        background-color: #479fff;
+    }
+    #startServerButton {
+        background-color: #5cb85c; /* Green color for starting */
+    }
+    #startServerButton:hover {
+        background-color: #449d44;
+    }
+    
+    .result {
+        margin-top: 25px;
+        padding: 15px;
+        background-color: #3a5353;
+        border: 1px solid #ffcc00;
+        border-radius: 4px;
+        min-height: 50px;
+        color: white;
+        white-space: pre-wrap; /* Preserve formatting for server list */
+    }
+    .result-list { /* Separate style for list/manager API results */
+        background-color: #2e4747;
+        border: 1px solid #63baff;
+    }
+    input[type="text"] {
+        background: #525252;
+        color: #fff;
+        width: 150px;
+    }
+</style>
+<body>
+    <h1>Server Manager Dashboard</h1>
+
+    <div class="main">
+        <h2>Kill Server by Token (Via Server's Internal API)</h2>
+        <p>Can't kill Port: <strong>(Check URL or Terminal)</strong></p>
+        <p>Current Port: <strong>(Check URL or Terminal)</strong></p>
+        <form id="commandForm" action="/submit" method="POST">
+            <label for="token">Server Token ID:</label>
+            <textarea id="token" name="token" rows="1" cols="50" placeholder="e.g., XyZ1aBcD2e"></textarea>
+            
+            <label for="command">Command to Send (Use **'kill'**):</label>
+            <textarea id="command" name="command" rows="1" cols="50" placeholder="e.g., kill"></textarea>
+            
+            <br>
+            <input type="submit" value="Send Command">
+        </form>
+        
+        <div class="result" id="result">Awaiting command...</div>
+    </div>
+
+    <div class="secondary-section">
+        <h2>Start New Server Process</h2>
+        <form id="startServerForm">
+            <label for="newPort">Port:</label>
+            <input type="text" id="newPort" name="newPort" placeholder="e.g., 8001" required>
+            
+            <label for="newId">ID (Arbitrary):</label>
+            <input type="text" id="newId" name="newId" placeholder="e.g., 2" required>
+            <br>
+            <button type="submit" id="startServerButton">Start New Server</button>
+        </form>
+        <div class="result result-list" id="startResult">Awaiting command...</div>
+    </div>
+
+    <div class="secondary-section">
+        <h2>Kill Server by Port or Token (Via Manager Console)</h2>
+        <form id="killByPortForm">
+            <label for="portToKill">Port or Token to Kill:</label>
+            <input type="text" id="portToKill" name="portToKill" placeholder="e.g., 8000 or XyZ1aBcD2e">
+            <br>
+            <button type="submit" id="killByPortButton">Kill Server</button>
+        </form>
+        <div class="result result-list" id="killResult">Awaiting command...</div>
+    </div>
+
+    <div class="secondary-section">
+        <h2>Active Servers Index</h2>
+        <button id="listServersButton">List Servers</button>
+        <div class="result result-list" id="listResult">Click 'List Servers' to see the index.</div>
+    </div>
+
+    <script src="manager_script.js"></script>
+</body>
+</html>
